@@ -13,3 +13,15 @@ clean:
 # Build and run
 start: build
     ./azul
+
+# Play the game (build and run)
+play: build
+    ./azul
+
+# Play human vs human
+play-human: build
+    ./azul -human 0 -players 2
+
+# Play against hard AI (Terminator)
+play-terminator: build
+    ./azul -ai hard

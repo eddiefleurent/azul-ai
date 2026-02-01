@@ -38,10 +38,13 @@ go build -o azul-ai .
 If you have [just](https://github.com/casey/just) installed, you can use these commands:
 
 ```bash
-just build    # Build the binary
-just run      # Run the game directly with go run
-just clean    # Remove build artifacts
-just start    # Build and run the binary
+just play           # Play the game (build and run)
+just play-human     # Human vs human
+just play-terminator # Play against hard AI (Terminator)
+just build          # Build the binary
+just run            # Run the game directly with go run
+just clean          # Remove build artifacts
+just start          # Build and run the binary
 ```
 
 ## AI Difficulty Levels

@@ -7,10 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Using just
 
 ```bash
-just build    # Build the binary (outputs ./azul)
-just run      # Run with go run (default settings)
-just clean    # Remove build artifacts
-just start    # Build and run the binary
+just play           # Play the game (build and run, you vs medium AI)
+just play-human     # Human vs human
+just play-terminator # Play against hard AI (Terminator)
+just build          # Build the binary (outputs ./azul)
+just run            # Run with go run (default settings)
+just clean          # Remove build artifacts
+just start          # Build and run the binary
 ```
 
 ### Direct go commands
