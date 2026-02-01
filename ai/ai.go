@@ -200,8 +200,13 @@ func (ai *AIPlayer) evaluateBoardProgress(player *game.PlayerBoard, move game.Mo
 
 // minimaxMove uses minimax with alpha-beta pruning
 func (ai *AIPlayer) minimaxMove(g *game.Game, moves []game.Move) game.Move {
+	if len(moves) == 0 {
+		return game.Move{}
+	}
+
 	bestScore := math.MinInt32
-	var bestMove game.Move
+	bestMove := moves[0]
+	appliedAny := false
 
 	// Limit search depth based on game state
 	depth := 4
@@ -216,6 +221,7 @@ func (ai *AIPlayer) minimaxMove(g *game.Game, moves []game.Move) game.Move {
 			// Skip invalid moves that fail to apply
 			continue
 		}
+		appliedAny = true
 
 		// Determine if the AI is the next player to move (maximizing)
 		// After applying the move, check who the current player is in the cloned game
@@ -226,6 +232,10 @@ func (ai *AIPlayer) minimaxMove(g *game.Game, moves []game.Move) game.Move {
 			bestScore = score
 			bestMove = move
 		}
+	}
+
+	if !appliedAny {
+		return bestMove
 	}
 
 	return bestMove
