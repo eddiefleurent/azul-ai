@@ -114,6 +114,46 @@ func DimTileCompact(t game.TileColor) string {
 	}
 }
 
+// ColorTileCentered returns a centered colored tile (3 chars visible) - like ColorTile but smaller background
+func ColorTileCentered(t game.TileColor) string {
+	switch t {
+	case game.Blue:
+		return " " + BgBlue + White + Bold + "B" + Reset + " "
+	case game.Yellow:
+		return " " + BgYellow + Black + Bold + "Y" + Reset + " "
+	case game.Red:
+		return " " + BgRed + White + Bold + "R" + Reset + " "
+	case game.Black:
+		return " " + BgBlack + White + Bold + "K" + Reset + " "
+	case game.White:
+		return " " + BgWhite + Black + Bold + "W" + Reset + " "
+	case game.FirstPlayerMarker:
+		return Magenta + Bold + " 1 " + Reset
+	case game.NoTile:
+		return Gray + " · " + Reset
+	default:
+		return " ? "
+	}
+}
+
+// DimTileCentered returns a centered dimmed tile for empty wall slots (3 chars)
+func DimTileCentered(t game.TileColor) string {
+	switch t {
+	case game.Blue:
+		return " " + Blue + Dim + "B" + Reset + " "
+	case game.Yellow:
+		return " " + Yellow + Dim + "Y" + Reset + " "
+	case game.Red:
+		return " " + Red + Dim + "R" + Reset + " "
+	case game.Black:
+		return " " + Gray + Dim + "K" + Reset + " "
+	case game.White:
+		return " " + White + Dim + "W" + Reset + " "
+	default:
+		return " · "
+	}
+}
+
 // DimTile returns a dimmed tile for empty wall slots (3 chars, matches ColorTile)
 func DimTile(t game.TileColor) string {
 	switch t {
@@ -201,8 +241,12 @@ func RenderPlayerBoard(pb *game.PlayerBoard, playerNum int, isCurrentPlayer bool
 	sb.WriteString(Bold + borderColor + "╰" + strings.Repeat("─", boxWidth) + "╯" + Reset + "\n")
 
 	// Pattern lines and wall header with yellow border
+	// LINES section: " 1│" (3) + pattern (10) + " " (1) = 14 chars
+	// WALL section: " " (1) + wall (15) + " " (1) = 17 chars (using ColorTile = 3 chars each × 5 = 15)
 	sb.WriteString("\n")
-	sb.WriteString("  " + Yellow + Bold + "┌─ LINES & WALL ────────────────────────┐" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "┌──────────────┬─────────────────┐" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "│" + Reset + "    " + Yellow + Bold + "LINES" + Reset + "     " + Yellow + Bold + "│" + Reset + "      " + Yellow + Bold + "WALL" + Reset + "       " + Yellow + Bold + "│" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "├──────────────┼─────────────────┤" + Reset + "\n")
 
 	for row := 0; row < 5; row++ {
 		pl := pb.PatternLines[row]
@@ -226,22 +270,16 @@ func RenderPlayerBoard(pb *game.PlayerBoard, playerNum int, isCurrentPlayer bool
 			}
 		}
 
-		// Arrow: " → " = 3 chars
-		if pl.IsFull() {
-			sb.WriteString(Green + Bold + " ▶ " + Reset)
-		} else {
-			sb.WriteString(Gray + " → " + Reset)
-		}
-		// Separator: "│ " = 2 chars
-		sb.WriteString("│ ")
+		// Separator
+		sb.WriteString(" " + Yellow + "│" + Reset + " ")
 
-		// Wall row
+		// Wall row - 5 tiles × 3 chars = 15 chars (same style as factory)
 		for col := 0; col < 5; col++ {
 			expectedColor := game.WallPattern[row][col]
 			if pb.Wall[row][col] {
-				sb.WriteString(ColorTileCompact(expectedColor))
+				sb.WriteString(ColorTile(expectedColor))
 			} else {
-				sb.WriteString(DimTileCompact(expectedColor))
+				sb.WriteString(DimTile(expectedColor))
 			}
 		}
 
@@ -249,31 +287,30 @@ func RenderPlayerBoard(pb *game.PlayerBoard, playerNum int, isCurrentPlayer bool
 		sb.WriteString(" " + Yellow + "│" + Reset + "\n")
 	}
 
-	// Yellow bottom border
-	sb.WriteString("  " + Yellow + Bold + "└──────────────────────────────────────┘" + Reset + "\n")
+	// Yellow bottom border - must match top border width
+	sb.WriteString("  " + Yellow + Bold + "└──────────────┴─────────────────┘" + Reset + "\n")
 
-	// Floor line
+	// Floor line - show penalty slots with tiles placed on them
 	sb.WriteString("\n  " + Red + "Floor:" + Reset + " ")
 	if len(pb.FloorLine) == 0 {
 		sb.WriteString(Gray + "empty" + Reset)
 	} else {
-		for i, t := range pb.FloorLine {
+		for _, t := range pb.FloorLine {
 			sb.WriteString(ColorTileSmall(t))
-			if i < len(game.FloorPenalties) {
-				sb.WriteString(fmt.Sprintf("%s%d%s ", Red+Dim, game.FloorPenalties[i], Reset))
-			} else {
-				sb.WriteString(" ")
-			}
+			sb.WriteString(" ")
 		}
 	}
 
-	// Floor penalty slots
+	// Floor penalty slots - show all 7 slots with penalties
+	// FloorPenalties are already negative values (-1, -1, -2, -2, -2, -3, -3)
 	sb.WriteString("\n         ")
 	for i := 0; i < 7; i++ {
 		if i < len(pb.FloorLine) {
-			sb.WriteString(Red + "▼  " + Reset)
+			// Slot is filled - show marker and penalty in red
+			sb.WriteString(Red + fmt.Sprintf("%d ", game.FloorPenalties[i]) + Reset)
 		} else {
-			sb.WriteString(Gray + fmt.Sprintf("%d  ", game.FloorPenalties[i]) + Reset)
+			// Empty slot - show penalty in gray
+			sb.WriteString(Gray + fmt.Sprintf("%d ", game.FloorPenalties[i]) + Reset)
 		}
 	}
 	sb.WriteString("\n")
@@ -566,7 +603,9 @@ func RenderLineSelection(pb *game.PlayerBoard, color game.TileColor, tileCount i
 func RenderBoardPreview(pb *game.PlayerBoard, color game.TileColor, tileCount int, targetLine int) string {
 	var sb strings.Builder
 
-	sb.WriteString("\n" + Yellow + Bold + "  ┌─ PREVIEW ─────────────────────────────┐" + Reset + "\n")
+	sb.WriteString("\n" + Yellow + Bold + "  ┌──────────────┬─────────────────┐" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "│" + Reset + "   " + Yellow + Bold + "PREVIEW" + Reset + "    " + Yellow + Bold + "│" + Reset + "      " + Yellow + Bold + "WALL" + Reset + "       " + Yellow + Bold + "│" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "├──────────────┼─────────────────┤" + Reset + "\n")
 
 	for row := 0; row < 5; row++ {
 		pl := pb.PatternLines[row]
@@ -575,89 +614,58 @@ func RenderBoardPreview(pb *game.PlayerBoard, color game.TileColor, tileCount in
 		isPreviewRow := row == targetLine
 		previewFilled := pl.Filled
 		previewColor := pl.Color
-		overflow := 0
 
 		if isPreviewRow {
 			space := pl.Size - pl.Filled
 			tilesToPlace := min(tileCount, space)
-			if tileCount > space {
-				overflow = tileCount - space
-			}
 			previewFilled = pl.Filled + tilesToPlace
 			previewColor = color
 		}
 
+		// Yellow left border
+		sb.WriteString("  " + Yellow + "│" + Reset)
+
 		// Row number - highlight if preview row
 		if isPreviewRow {
-			sb.WriteString(fmt.Sprintf("  %s│%s %s%d%s│", Yellow, Reset, Yellow+Bold, row+1, Reset))
+			sb.WriteString(fmt.Sprintf(" %s%d%s│", Yellow+Bold, row+1, Reset))
 		} else {
-			sb.WriteString(fmt.Sprintf("  %s│%s %s%d%s│", Yellow, Reset, Cyan+Bold, row+1, Reset))
+			sb.WriteString(fmt.Sprintf(" %s%d%s│", Cyan+Bold, row+1, Reset))
 		}
 
-		// Pattern line (right-aligned) - use 3-char tiles for preview row
+		// Pattern line (right-aligned) - each slot is 2 chars wide
 		padding := 5 - pl.Size
-		if isPreviewRow {
-			// Use full colored tiles (3 chars each) for preview
-			sb.WriteString(strings.Repeat("   ", padding))
-			for i := 0; i < pl.Size; i++ {
-				if i < pl.Size-previewFilled {
-					sb.WriteString(Gray + " · " + Reset)
-				} else if i < pl.Size-pl.Filled {
-					// New tiles being placed - show with full background color
-					sb.WriteString(ColorTile(previewColor))
-				} else {
-					sb.WriteString(ColorTile(previewColor))
-				}
-			}
-		} else {
-			// Normal rows use 2-char compact tiles
-			sb.WriteString(strings.Repeat("  ", padding))
-			sb.WriteString(" ") // Extra space to align with 3-char tiles
-			for i := 0; i < pl.Size; i++ {
-				if i < pl.Size-pl.Filled {
-					sb.WriteString(White + "□ " + Reset)
-				} else {
-					sb.WriteString(ColorTileCompact(pl.Color))
-				}
-			}
-		}
+		sb.WriteString(strings.Repeat("  ", padding))
 
-		// Arrow and wall
-		willComplete := isPreviewRow && previewFilled == pl.Size
-		if isPreviewRow {
-			if willComplete {
-				sb.WriteString(Green + Bold + " ▶ " + Reset)
+		for i := 0; i < pl.Size; i++ {
+			if i < pl.Size-previewFilled {
+				sb.WriteString(White + "□ " + Reset)
 			} else {
-				sb.WriteString(Yellow + " → " + Reset)
+				sb.WriteString(ColorTileCompact(previewColor))
 			}
-		} else {
-			sb.WriteString(Gray + " → " + Reset)
 		}
 
-		sb.WriteString("│ ")
+		// Separator
+		sb.WriteString(" " + Yellow + "│" + Reset + " ")
 
-		// Wall row
+		// Wall row - 5 tiles × 3 chars = 15 chars (same style as factory)
+		willComplete := isPreviewRow && previewFilled == pl.Size
 		for col := 0; col < 5; col++ {
 			expectedColor := game.WallPattern[row][col]
 			if pb.Wall[row][col] {
-				sb.WriteString(ColorTileCompact(expectedColor))
+				sb.WriteString(ColorTile(expectedColor))
+			} else if willComplete && expectedColor == color {
+				// Highlight the slot that will be filled
+				sb.WriteString(ColorTile(expectedColor))
 			} else {
-				sb.WriteString(DimTileCompact(expectedColor))
+				sb.WriteString(DimTile(expectedColor))
 			}
 		}
 
-		// Show overflow indicator on the preview row
-		if isPreviewRow && overflow > 0 {
-			sb.WriteString(fmt.Sprintf(Red + " +" + fmt.Sprint(overflow) + " floor" + Reset))
-		}
-		if willComplete {
-			sb.WriteString(Green + " ✓" + Reset)
-		}
-
-		sb.WriteString(Yellow + " │" + Reset + "\n")
+		// Yellow right border
+		sb.WriteString(" " + Yellow + "│" + Reset + "\n")
 	}
 
-	sb.WriteString(Yellow + Bold + "  └──────────────────────────────────────────┘" + Reset + "\n")
+	sb.WriteString("  " + Yellow + Bold + "└──────────────┴─────────────────┘" + Reset + "\n")
 
 	return sb.String()
 }
