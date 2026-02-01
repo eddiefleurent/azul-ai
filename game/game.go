@@ -95,7 +95,7 @@ type Move struct {
 func (m Move) String() string {
 	source := "center"
 	if m.FactoryIdx >= 0 {
-		source = fmt.Sprintf("factory %d", m.FactoryIdx)
+		source = fmt.Sprintf("factory %d", m.FactoryIdx+1)
 	}
 
 	dest := "floor"

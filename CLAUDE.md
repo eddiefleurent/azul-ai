@@ -77,14 +77,14 @@ This is a command-line implementation of the board game Azul with AI opponents. 
 
 The wall uses a standard Azul pattern where each row contains all 5 colors in a shifted arrangement:
 ```
-Row 0: Blue, Yellow, Red, Black, White
-Row 1: White, Blue, Yellow, Red, Black
-Row 2: Black, White, Blue, Yellow, Red
-Row 3: Red, Black, White, Blue, Yellow
-Row 4: Yellow, Red, Black, White, Blue
+Row 1: Blue, Yellow, Red, Black, White
+Row 2: White, Blue, Yellow, Red, Black
+Row 3: Black, White, Blue, Yellow, Red
+Row 4: Red, Black, White, Blue, Yellow
+Row 5: Yellow, Red, Black, White, Blue
 ```
 
-This means each color appears exactly once per row and column.
+This means each color appears exactly once per row and column. Note: internally the code uses 0-based indexing, but all user-facing displays use 1-based numbering (lines 1-5).
 
 ### Important Validation Rules
 
