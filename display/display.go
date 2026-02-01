@@ -541,15 +541,15 @@ func RenderLineSelection(pb *game.PlayerBoard, color game.TileColor, tileCount i
 		padding := 5 - pl.Size
 		sb.WriteString(strings.Repeat("   ", padding))
 
-		// Show tiles filling from LEFT to RIGHT (filled tiles on left, empty on right)
-		// This makes it clear how many more you need to fill
+		// Show tiles filling from RIGHT to LEFT (empty on left, filled on right)
+		// Per official Azul rules: tiles are placed right to left in pattern lines
 		for i := 0; i < pl.Size; i++ {
-			if i < newFilled {
-				// Filled tiles (existing + new) - show with color background
-				sb.WriteString(ColorTile(color))
-			} else {
-				// Still empty after placement - show empty box
+			if i < pl.Size-newFilled {
+				// Empty slots on the left
 				sb.WriteString(Gray + " □ " + Reset)
+			} else {
+				// Filled tiles (existing + new) on the right
+				sb.WriteString(ColorTile(color))
 			}
 		}
 

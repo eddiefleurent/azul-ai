@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Game Rules
+
+For complete official Azul rules, see [docs/AZUL_RULES.md](docs/AZUL_RULES.md).
+
 ## Build and Run Commands
 
 ### Using just

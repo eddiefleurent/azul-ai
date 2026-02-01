@@ -212,7 +212,10 @@ func (ai *AIPlayer) minimaxMove(g *game.Game, moves []game.Move) game.Move {
 	for _, move := range moves {
 		// Clone and apply move
 		clone := g.Clone()
-		clone.ApplyMove(move)
+		if err := clone.ApplyMove(move); err != nil {
+			// Skip invalid moves that fail to apply
+			continue
+		}
 
 		// Determine if the AI is the next player to move (maximizing)
 		// After applying the move, check who the current player is in the cloned game
@@ -244,7 +247,10 @@ func (ai *AIPlayer) minimax(g *game.Game, depth int, alpha, beta int, maximizing
 		maxEval := math.MinInt32
 		for _, move := range moves {
 			clone := g.Clone()
-			clone.ApplyMove(move)
+			if err := clone.ApplyMove(move); err != nil {
+				// Skip invalid moves that fail to apply
+				continue
+			}
 
 			eval := ai.minimax(clone, depth-1, alpha, beta, clone.CurrentPlayer == ai.playerIdx)
 			maxEval = max(maxEval, eval)
@@ -259,7 +265,10 @@ func (ai *AIPlayer) minimax(g *game.Game, depth int, alpha, beta int, maximizing
 		minEval := math.MaxInt32
 		for _, move := range moves {
 			clone := g.Clone()
-			clone.ApplyMove(move)
+			if err := clone.ApplyMove(move); err != nil {
+				// Skip invalid moves that fail to apply
+				continue
+			}
 
 			eval := ai.minimax(clone, depth-1, alpha, beta, clone.CurrentPlayer == ai.playerIdx)
 			minEval = min(minEval, eval)

@@ -120,7 +120,7 @@ The game ends **immediately after the Wall-tiling phase** in which at least one 
 After the final round, score additional points:
 
 | Achievement | Bonus |
-| ------------- | ------- |
+|-------------|-------|
 | Each complete **horizontal line** (5 tiles in a row) | **+2 points** |
 | Each complete **vertical line** (5 tiles in a column) | **+7 points** |
 | Each complete **color set** (all 5 tiles of one color on wall) | **+10 points** |
@@ -135,7 +135,7 @@ The player with the **most points** wins.
 
 The standard wall has a fixed color pattern where each row is shifted:
 
-```text
+```
 Row 1: Blue    Yellow  Red     Black   White
 Row 2: White   Blue    Yellow  Red     Black
 Row 3: Black   White   Blue    Yellow  Red

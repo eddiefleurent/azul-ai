@@ -73,6 +73,10 @@ azul-ai/
 
 ## Game Rules Summary
 
+For complete official rules, see [docs/AZUL_RULES.md](docs/AZUL_RULES.md).
+
+Quick summary:
+
 1. **Drafting**: Take all tiles of one color from a factory or center
 2. **Placing**: Put tiles on a pattern line (1-5 capacity)
 3. **Wall Tiling**: Completed lines move one tile to the wall, score points

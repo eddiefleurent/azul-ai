@@ -18,8 +18,8 @@ type Game struct {
 	NumPlayers    int
 }
 
-// NewGame creates a new game with the specified number of players
-func NewGame(numPlayers int) *Game {
+// newGameWithBag is a shared initializer for creating games with a specific bag
+func newGameWithBag(numPlayers int, bag *Bag) *Game {
 	if numPlayers < 2 {
 		numPlayers = 2
 	}
@@ -34,7 +34,7 @@ func NewGame(numPlayers int) *Game {
 		Players:       make([]*PlayerBoard, numPlayers),
 		Factories:     make([]*Factory, numFactories),
 		Center:        NewCenter(),
-		Bag:           NewBag(time.Now().UnixNano()),
+		Bag:           bag,
 		CurrentPlayer: 0,
 		FirstPlayer:   0,
 		Round:         1,
@@ -54,12 +54,14 @@ func NewGame(numPlayers int) *Game {
 	return g
 }
 
+// NewGame creates a new game with the specified number of players
+func NewGame(numPlayers int) *Game {
+	return newGameWithBag(numPlayers, NewBag(time.Now().UnixNano()))
+}
+
 // NewGameWithSeed creates a game with a specific random seed (for reproducibility)
 func NewGameWithSeed(numPlayers int, seed int64) *Game {
-	g := NewGame(numPlayers)
-	g.Bag = NewBag(seed)
-	g.SetupRound()
-	return g
+	return newGameWithBag(numPlayers, NewBag(seed))
 }
 
 // SetupRound prepares factories for a new round
@@ -269,6 +271,9 @@ func (g *Game) GetWinner() int {
 	if tie {
 		// Tiebreaker: most completed horizontal lines
 		maxRows := -1
+		tempWinner := -1
+		tieOnRows := false
+
 		for i, player := range g.Players {
 			if player.Score != maxScore {
 				continue
@@ -288,8 +293,18 @@ func (g *Game) GetWinner() int {
 			}
 			if rows > maxRows {
 				maxRows = rows
-				winner = i
+				tempWinner = i
+				tieOnRows = false
+			} else if rows == maxRows {
+				tieOnRows = true
 			}
+		}
+
+		// If multiple players share the top maxRows, return -1 for shared victory
+		if tieOnRows {
+			winner = -1
+		} else {
+			winner = tempWinner
 		}
 	}
 
