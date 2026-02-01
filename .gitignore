@@ -2,9 +2,6 @@
 azul
 azul-ai
 
-# Orphaned development artifacts
-game/state.py
-
 # Go build artifacts
 *.test
 *.out
