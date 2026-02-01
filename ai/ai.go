@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/eddie/azul-ai/game"
+	"github.com/eddiefleurent/azul-ai/game"
 )
 
 // Player interface for both human and AI players
@@ -245,12 +245,14 @@ func (ai *AIPlayer) minimax(g *game.Game, depth int, alpha, beta int, maximizing
 
 	if maximizing {
 		maxEval := math.MinInt32
+		anyValid := false
 		for _, move := range moves {
 			clone := g.Clone()
 			if err := clone.ApplyMove(move); err != nil {
 				// Skip invalid moves that fail to apply
 				continue
 			}
+			anyValid = true
 
 			eval := ai.minimax(clone, depth-1, alpha, beta, clone.CurrentPlayer == ai.playerIdx)
 			maxEval = max(maxEval, eval)
@@ -260,15 +262,20 @@ func (ai *AIPlayer) minimax(g *game.Game, depth int, alpha, beta int, maximizing
 				break
 			}
 		}
+		if !anyValid {
+			return ai.evaluateState(g)
+		}
 		return maxEval
 	} else {
 		minEval := math.MaxInt32
+		anyValid := false
 		for _, move := range moves {
 			clone := g.Clone()
 			if err := clone.ApplyMove(move); err != nil {
 				// Skip invalid moves that fail to apply
 				continue
 			}
+			anyValid = true
 
 			eval := ai.minimax(clone, depth-1, alpha, beta, clone.CurrentPlayer == ai.playerIdx)
 			minEval = min(minEval, eval)
@@ -277,6 +284,9 @@ func (ai *AIPlayer) minimax(g *game.Game, depth int, alpha, beta int, maximizing
 			if beta <= alpha {
 				break
 			}
+		}
+		if !anyValid {
+			return ai.evaluateState(g)
 		}
 		return minEval
 	}

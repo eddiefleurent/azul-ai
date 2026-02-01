@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/eddie/azul-ai/game"
+	"github.com/eddiefleurent/azul-ai/game"
 )
 
 // ANSI color codes
@@ -229,14 +229,19 @@ func RenderPlayerBoard(pb *game.PlayerBoard, playerNum int, isCurrentPlayer bool
 
 	// Player name and score line
 	turnMarker := ""
+	turnMarkerLen := 0
 	if isCurrentPlayer {
 		turnMarker = " ◄ YOUR TURN"
+		turnMarkerLen = 13 // visible characters: " ◄ YOUR TURN"
 	}
-	content := fmt.Sprintf(" %-12s          Score: %3d%s", playerName, pb.Score, turnMarker)
+	baseContent := fmt.Sprintf(" %-12s          Score: %3d", playerName, pb.Score)
+	visibleLen := len(baseContent) + turnMarkerLen
 	// Pad to box width
-	if len(content) < boxWidth {
-		content += strings.Repeat(" ", boxWidth-len(content))
+	padding := ""
+	if visibleLen < boxWidth {
+		padding = strings.Repeat(" ", boxWidth-visibleLen)
 	}
+	content := baseContent + turnMarker + padding
 	sb.WriteString(Bold + borderColor + "│" + Reset + content + Bold + borderColor + "│" + Reset + "\n")
 	sb.WriteString(Bold + borderColor + "╰" + strings.Repeat("─", boxWidth) + "╯" + Reset + "\n")
 
@@ -388,6 +393,8 @@ func RenderGameOver(g *game.Game, playerNames []string) string {
 			winnerName = playerNames[winner]
 		}
 		sb.WriteString(fmt.Sprintf("\n%s🎉 %s wins! 🎉%s\n", Bold+Green, winnerName, Reset))
+	} else {
+		sb.WriteString(fmt.Sprintf("\n%s🤝 It's a tie! 🤝%s\n", Bold+Yellow, Reset))
 	}
 
 	return sb.String()

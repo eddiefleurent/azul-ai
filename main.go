@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eddie/azul-ai/ai"
-	"github.com/eddie/azul-ai/display"
-	"github.com/eddie/azul-ai/game"
+	"github.com/eddiefleurent/azul-ai/ai"
+	"github.com/eddiefleurent/azul-ai/display"
+	"github.com/eddiefleurent/azul-ai/game"
 )
 
 func main() {
