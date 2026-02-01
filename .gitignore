@@ -1,0 +1,25 @@
+# Binaries
+azul
+azul-ai
+
+# Orphaned development artifacts
+game/state.py
+
+# Go build artifacts
+*.test
+*.out
+coverage.txt
+*.prof
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+.Spotlight-V100
+.Trashes
