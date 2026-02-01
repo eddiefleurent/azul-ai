@@ -4,6 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build and Run Commands
 
+### Using just
+
+```bash
+just build    # Build the binary (outputs ./azul)
+just run      # Run with go run (default settings)
+just clean    # Remove build artifacts
+just start    # Build and run the binary
+```
+
+### Direct go commands
+
 ```bash
 # Build the binary
 go build -o azul-ai .

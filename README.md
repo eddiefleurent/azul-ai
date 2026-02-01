@@ -33,6 +33,17 @@ go build -o azul-ai .
 | `-human N` | Which player is human (1-4), 0 for AI vs AI | 1 |
 | `-help` | Show help | - |
 
+## Just Commands
+
+If you have [just](https://github.com/casey/just) installed, you can use these commands:
+
+```bash
+just build    # Build the binary
+just run      # Run the game directly with go run
+just clean    # Remove build artifacts
+just start    # Build and run the binary
+```
+
 ## AI Difficulty Levels
 
 - **Easy**: Random legal moves
