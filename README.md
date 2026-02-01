@@ -33,6 +33,21 @@ go build -o azul-ai .
 | `-human N` | Which player is human (1-4), 0 for AI vs AI | 1 |
 | `-help` | Show help | - |
 
+## Just Commands
+
+If you have [just](https://github.com/casey/just) installed, you can use these commands:
+
+```bash
+just play           # Play the game (build and run)
+just play-human     # Play as human (you vs AI)
+just play-ai        # Watch AI vs AI
+just play-terminator # Play against hard AI (Terminator)
+just build          # Build the binary
+just run            # Run the game directly with go run
+just clean          # Remove build artifacts
+just start          # Build and run the binary
+```
+
 ## AI Difficulty Levels
 
 - **Easy**: Random legal moves
@@ -57,6 +72,10 @@ azul-ai/
 ```
 
 ## Game Rules Summary
+
+For complete official rules, see [docs/AZUL_RULES.md](docs/AZUL_RULES.md).
+
+Quick summary:
 
 1. **Drafting**: Take all tiles of one color from a factory or center
 2. **Placing**: Put tiles on a pattern line (1-5 capacity)
