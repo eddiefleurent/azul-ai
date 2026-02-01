@@ -214,7 +214,10 @@ func (ai *AIPlayer) minimaxMove(g *game.Game, moves []game.Move) game.Move {
 		clone := g.Clone()
 		clone.ApplyMove(move)
 
-		score := ai.minimax(clone, depth-1, math.MinInt32, math.MaxInt32, false)
+		// Determine if the AI is the next player to move (maximizing)
+		// After applying the move, check who the current player is in the cloned game
+		isAINext := clone.CurrentPlayer == ai.playerIdx
+		score := ai.minimax(clone, depth-1, math.MinInt32, math.MaxInt32, isAINext)
 
 		if score > bestScore {
 			bestScore = score

@@ -9,6 +9,7 @@ type Bag struct {
 	tiles    []TileColor
 	discards []TileColor
 	rng      *rand.Rand
+	seed     int64 // Original seed for cloning
 }
 
 // NewBag creates a bag with 20 tiles of each color (100 total)
@@ -17,6 +18,7 @@ func NewBag(seed int64) *Bag {
 		tiles:    make([]TileColor, 0, 100),
 		discards: make([]TileColor, 0, 100),
 		rng:      rand.New(rand.NewSource(seed)),
+		seed:     seed,
 	}
 
 	// Add 20 of each color
@@ -83,7 +85,8 @@ func (b *Bag) Clone() *Bag {
 	newBag := &Bag{
 		tiles:    make([]TileColor, len(b.tiles)),
 		discards: make([]TileColor, len(b.discards)),
-		rng:      rand.New(rand.NewSource(b.rng.Int63())),
+		rng:      rand.New(rand.NewSource(b.seed)),
+		seed:     b.seed,
 	}
 	copy(newBag.tiles, b.tiles)
 	copy(newBag.discards, b.discards)

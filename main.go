@@ -43,11 +43,14 @@ func main() {
 	// Create game
 	g := game.NewGame(*numPlayers)
 
+	// Use the game's clamped player count (NewGame clamps to 2-4)
+	numPlayersActual := g.NumPlayers
+
 	// Player names
-	playerNames := make([]string, *numPlayers)
+	playerNames := make([]string, numPlayersActual)
 	aiPlayers := make(map[int]*ai.AIPlayer)
 
-	for i := 0; i < *numPlayers; i++ {
+	for i := 0; i < numPlayersActual; i++ {
 		if i+1 == *humanPlayer {
 			playerNames[i] = "You"
 		} else {

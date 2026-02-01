@@ -39,7 +39,8 @@ If you have [just](https://github.com/casey/just) installed, you can use these c
 
 ```bash
 just play           # Play the game (build and run)
-just play-human     # Human vs human
+just play-human     # Play as human (you vs AI)
+just play-ai        # Watch AI vs AI
 just play-terminator # Play against hard AI (Terminator)
 just build          # Build the binary
 just run            # Run the game directly with go run

@@ -140,7 +140,41 @@ func (g *Game) GetValidMoves() []Move {
 
 // ApplyMove executes a move and updates game state
 func (g *Game) ApplyMove(move Move) error {
+	// Validate inputs before any mutation
+	if g.CurrentPlayer < 0 || g.CurrentPlayer >= len(g.Players) {
+		return fmt.Errorf("invalid current player index: %d", g.CurrentPlayer)
+	}
 	player := g.Players[g.CurrentPlayer]
+
+	// Validate factory index
+	if move.FactoryIdx != -1 {
+		if move.FactoryIdx < 0 || move.FactoryIdx >= len(g.Factories) {
+			return fmt.Errorf("invalid factory index: %d", move.FactoryIdx)
+		}
+	}
+
+	// Validate line index (-1 is valid for floor, 0-4 for pattern lines)
+	if move.LineIdx < -1 || move.LineIdx >= 5 {
+		return fmt.Errorf("invalid line index: %d", move.LineIdx)
+	}
+
+	// Validate that the color exists at the source (non-mutating check)
+	if move.FactoryIdx == -1 {
+		if !g.Center.HasColor(move.Color) {
+			return fmt.Errorf("no tiles of color %s in center", move.Color.FullName())
+		}
+	} else {
+		if !g.Factories[move.FactoryIdx].HasColor(move.Color) {
+			return fmt.Errorf("no tiles of color %s in factory %d", move.Color.FullName(), move.FactoryIdx+1)
+		}
+	}
+
+	// Validate that the player can place on the chosen line (if not floor)
+	if move.LineIdx >= 0 && !player.CanPlaceOnLine(move.LineIdx, move.Color) {
+		return fmt.Errorf("cannot place %s on line %d", move.Color.FullName(), move.LineIdx+1)
+	}
+
+	// All validation passed - now perform mutations
 	var tiles []TileColor
 	var tookFirstPlayer bool
 
@@ -156,10 +190,6 @@ func (g *Game) ApplyMove(move Move) error {
 		var remaining []TileColor
 		tiles, remaining = g.Factories[move.FactoryIdx].TakeColor(move.Color)
 		g.Center.AddTiles(remaining)
-	}
-
-	if len(tiles) == 0 {
-		return fmt.Errorf("no tiles of color %s at source", move.Color.FullName())
 	}
 
 	// Place tiles

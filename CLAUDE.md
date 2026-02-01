@@ -8,7 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 just play           # Play the game (build and run, you vs medium AI)
-just play-human     # Human vs human
+just play-human     # Play as human (you vs AI)
+just play-ai        # Watch AI vs AI
 just play-terminator # Play against hard AI (Terminator)
 just build          # Build the binary (outputs ./azul)
 just run            # Run with go run (default settings)
@@ -76,7 +77,7 @@ This is a command-line implementation of the board game Azul with AI opponents. 
 ### Wall Pattern
 
 The wall uses a standard Azul pattern where each row contains all 5 colors in a shifted arrangement:
-```
+```text
 Row 1: Blue, Yellow, Red, Black, White
 Row 2: White, Blue, Yellow, Red, Black
 Row 3: Black, White, Blue, Yellow, Red
